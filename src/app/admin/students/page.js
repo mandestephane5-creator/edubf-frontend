@@ -1,0 +1,202 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { PageHeader, DataTable, Button, Avatar } from "@/components/ui";
+import Modal from "@/components/Modal";
+import { studentsApi } from "@/app/api-calls/students";
+import { classesApi } from "@/app/api-calls/directory";
+
+const emptyForm = {
+  student: { firstName: "", lastName: "", birthDate: "", classId: "" },
+  parent: { firstName: "", lastName: "", phone: "" },
+};
+
+export default function StudentsPage() {
+  const [students, setStudents] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [error, setError] = useState("");
+  const [successInfo, setSuccessInfo] = useState(null);
+  const [duplicateConfirm, setDuplicateConfirm] = useState(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const [s, c] = await Promise.all([studentsApi.list(search ? { search } : {}), classesApi.list()]);
+      setStudents(s);
+      setClasses(c);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handleSearch(e) {
+    e.preventDefault();
+    load();
+  }
+
+  function resetModal() {
+    setForm(emptyForm);
+    setDuplicateConfirm(null);
+    setError("");
+  }
+
+  async function submitCreate(linkToExistingParentId) {
+    setError("");
+    try {
+      const payload = {
+        student: { ...form.student, classId: form.student.classId || undefined },
+        parent: form.parent,
+        ...(linkToExistingParentId && { linkToExistingParentId }),
+      };
+      const result = await studentsApi.create(payload);
+      setSuccessInfo({ matricule: result.matricule, parentPassword: result.parentPassword });
+      setModalOpen(false);
+      resetModal();
+      load();
+    } catch (err) {
+      if (err.code === "PHONE_ALREADY_EXISTS") {
+        const existing = await studentsApi.checkParentPhone(form.parent.phone);
+        setDuplicateConfirm({ existingParent: existing });
+      } else {
+        setError(err.message);
+      }
+    }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    await submitCreate();
+  }
+
+  return (
+    <div>
+      <PageHeader
+        title="Élèves"
+        description="Inscription et suivi des élèves"
+        action={<Button onClick={() => setModalOpen(true)}>+ Inscrire un élève</Button>}
+      />
+
+      <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Rechercher un élève ou un matricule…"
+          className="focus-ring w-full max-w-sm rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+        />
+        <Button variant="outline" type="submit">Rechercher</Button>
+      </form>
+
+      {successInfo && (
+        <div className="mb-4 rounded-lg bg-emerald-soft px-4 py-3 text-sm text-emerald">
+          <p className="font-medium">Élève inscrit avec succès.</p>
+          <p>Matricule : <span className="font-mono">{successInfo.matricule}</span></p>
+          {successInfo.parentPassword && (
+            <p>Mot de passe du parent : <span className="font-mono">{successInfo.parentPassword}</span> — transmettez-le au parent.</p>
+          )}
+        </div>
+      )}
+      {error && <p className="mb-4 rounded-lg bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
+
+      {loading ? (
+        <p className="text-sm text-muted">Chargement…</p>
+      ) : (
+        <DataTable
+          columns={[
+            { key: "avatar", header: "", render: (r) => <Avatar name={`${r.firstName} ${r.lastName}`} /> },
+            { key: "matricule", header: "Matricule", render: (r) => <span className="font-mono text-xs">{r.matricule}</span> },
+            { key: "name", header: "Nom", render: (r) => `${r.firstName} ${r.lastName}` },
+            { key: "class", header: "Classe", render: (r) => r.class?.name || "—" },
+            {
+              key: "parents",
+              header: "Parent(s)",
+              render: (r) => r.parents?.map((p) => `${p.parent.firstName} ${p.parent.lastName}`).join(", ") || "—",
+            },
+          ]}
+          rows={students}
+          emptyLabel="Aucun élève inscrit pour le moment."
+        />
+      )}
+
+      <Modal open={modalOpen} onClose={() => { setModalOpen(false); resetModal(); }} title="Inscrire un élève">
+        {duplicateConfirm ? (
+          <div className="space-y-4">
+            <p className="text-sm text-ink">
+              Le numéro <span className="font-mono">{form.parent.phone}</span> correspond déjà à{" "}
+              <strong>{duplicateConfirm.existingParent.firstName} {duplicateConfirm.existingParent.lastName}</strong>,
+              parent de {duplicateConfirm.existingParent.children?.length ?? 0} élève(s) dans l'école.
+            </p>
+            <p className="text-sm text-muted">Voulez-vous relier ce nouvel élève à ce compte parent existant ?</p>
+            {error && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setDuplicateConfirm(null)} className="flex-1">Annuler</Button>
+              <Button onClick={() => submitCreate(duplicateConfirm.existingParent.id)} className="flex-1">Oui, relier</Button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Élève</p>
+              <div className="space-y-3">
+                <TextField label="Prénom" value={form.student.firstName} onChange={(v) => setForm((f) => ({ ...f, student: { ...f.student, firstName: v } }))} />
+                <TextField label="Nom" value={form.student.lastName} onChange={(v) => setForm((f) => ({ ...f, student: { ...f.student, lastName: v } }))} />
+                <TextField label="Date de naissance" type="date" value={form.student.birthDate} onChange={(v) => setForm((f) => ({ ...f, student: { ...f.student, birthDate: v } }))} required={false} />
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-medium text-ink">Classe</span>
+                  <select
+                    value={form.student.classId}
+                    onChange={(e) => setForm((f) => ({ ...f, student: { ...f.student, classId: e.target.value } }))}
+                    className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+                  >
+                    <option value="">— Aucune classe —</option>
+                    {classes.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Parent</p>
+              <div className="space-y-3">
+                <TextField label="Prénom" value={form.parent.firstName} onChange={(v) => setForm((f) => ({ ...f, parent: { ...f.parent, firstName: v } }))} />
+                <TextField label="Nom" value={form.parent.lastName} onChange={(v) => setForm((f) => ({ ...f, parent: { ...f.parent, lastName: v } }))} />
+                <TextField label="Téléphone" value={form.parent.phone} onChange={(v) => setForm((f) => ({ ...f, parent: { ...f.parent, phone: v } }))} placeholder="+226 70 00 00 00" />
+              </div>
+            </div>
+
+            {error && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
+            <Button type="submit" className="w-full">Inscrire l'élève</Button>
+          </form>
+        )}
+      </Modal>
+    </div>
+  );
+}
+
+function TextField({ label, value, onChange, type = "text", required = true, placeholder }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-sm font-medium text-ink">{label}</span>
+      <input
+        type={type}
+        required={required}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+      />
+    </label>
+  );
+}
