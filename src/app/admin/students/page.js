@@ -5,6 +5,7 @@ import { PageHeader, DataTable, Button, Avatar } from "@/components/ui";
 import Modal from "@/components/Modal";
 import { studentsApi } from "@/app/api-calls/students";
 import { classesApi } from "@/app/api-calls/directory";
+import { parseSpreadsheetFile, extractPdfText, downloadImportTemplate } from "./importUtils";
 
 const emptyForm = {
   student: { firstName: "", lastName: "", birthDate: "", classId: "" },
@@ -21,6 +22,8 @@ export default function StudentsPage() {
   const [bulkText, setBulkText] = useState("");
   const [bulkResults, setBulkResults] = useState(null);
   const [bulkError, setBulkError] = useState("");
+  const [fileImporting, setFileImporting] = useState(false);
+  const [pdfNotice, setPdfNotice] = useState("");
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
   const [successInfo, setSuccessInfo] = useState(null);
@@ -99,6 +102,45 @@ export default function StudentsPage() {
       load();
     } catch (err) {
       setBulkError(err.message);
+    }
+  }
+
+  async function handleFileSelected(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBulkError("");
+    setPdfNotice("");
+    setFileImporting(true);
+    try {
+      const extension = file.name.split(".").pop().toLowerCase();
+
+      if (extension === "xlsx" || extension === "csv") {
+        // Excel/CSV : lecture fiable, colonnes détectées automatiquement via le modèle
+        const rows = await parseSpreadsheetFile(file);
+        if (rows.length === 0) {
+          setBulkError("Aucune ligne valide trouvée. Vérifie que le fichier suit bien le modèle fourni.");
+          return;
+        }
+        const results = await studentsApi.bulkCreate(rows);
+        setBulkResults(results);
+        load();
+      } else if (extension === "pdf") {
+        // PDF : extraction du texte uniquement — la mise en page d'un PDF est trop
+        // variable pour retrouver les colonnes de façon fiable. Le texte extrait est
+        // affiché ci-dessous pour vérification/correction manuelle avant l'import.
+        const text = await extractPdfText(file);
+        setBulkText(text);
+        setPdfNotice(
+          "Texte extrait du PDF. Vérifie et reformate chaque ligne (Prénom;Nom;Date;Classe;PrénomParent;NomParent;Téléphone) avant de cliquer sur Importer — l'extraction automatique des colonnes n'est pas fiable pour un PDF."
+        );
+      } else {
+        setBulkError("Format non reconnu. Utilise un fichier .xlsx, .csv ou .pdf.");
+      }
+    } catch (err) {
+      setBulkError(err.message);
+    } finally {
+      setFileImporting(false);
+      e.target.value = "";
     }
   }
 
@@ -212,7 +254,7 @@ export default function StudentsPage() {
 
       <Modal
         open={bulkModalOpen}
-        onClose={() => { setBulkModalOpen(false); setBulkResults(null); setBulkText(""); setBulkError(""); }}
+        onClose={() => { setBulkModalOpen(false); setBulkResults(null); setBulkText(""); setBulkError(""); setPdfNotice(""); }}
         title="Import en masse"
       >
         {bulkResults ? (
@@ -241,8 +283,26 @@ export default function StudentsPage() {
           </div>
         ) : (
           <form onSubmit={handleBulkImport} className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={downloadImportTemplate}>
+                Télécharger le modèle Excel
+              </Button>
+              <label className="focus-ring cursor-pointer rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-ink transition hover:bg-bg">
+                {fileImporting ? "Lecture…" : "Importer un fichier (.xlsx, .csv, .pdf)"}
+                <input
+                  type="file"
+                  accept=".xlsx,.csv,.pdf"
+                  onChange={handleFileSelected}
+                  disabled={fileImporting}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {pdfNotice && <p className="rounded-md bg-amber-soft px-3 py-2 text-sm text-amber">{pdfNotice}</p>}
+
             <p className="text-sm text-muted">
-              Une ligne par élève, valeurs séparées par des points-virgules (<code>;</code>) :
+              Ou colle directement le texte ci-dessous — une ligne par élève, valeurs séparées par des points-virgules (<code>;</code>) :
             </p>
             <p className="rounded-md bg-bg px-3 py-2 font-mono text-xs text-ink">
               Prénom;Nom;DateNaissance(AAAA-MM-JJ, optionnel);Classe(optionnel);PrénomParent;NomParent;TéléphoneParent
