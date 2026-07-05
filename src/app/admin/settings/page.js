@@ -32,6 +32,10 @@ export default function SettingsPage() {
         name: settings.name,
         city: settings.city,
         phone: settings.phone,
+        adminPhone: settings.adminPhone,
+        surveillancePhone: settings.surveillancePhone,
+        secretariatHours: settings.secretariatHours,
+        address: settings.address,
         publicWebsiteUrl: settings.publicWebsiteUrl || "",
       });
       setSettings(updated);
@@ -76,6 +80,34 @@ export default function SettingsPage() {
         <Field label="Nom de l'école" value={settings.name} onChange={(v) => setSettings((s) => ({ ...s, name: v }))} disabled={!isAdmin} />
         <Field label="Ville" value={settings.city || ""} onChange={(v) => setSettings((s) => ({ ...s, city: v }))} disabled={!isAdmin} />
         <Field label="Téléphone" value={settings.phone || ""} onChange={(v) => setSettings((s) => ({ ...s, phone: v }))} disabled={!isAdmin} />
+        <Field
+          label="Téléphone Administration (affiché dans l'app mobile)"
+          value={settings.adminPhone || ""}
+          onChange={(v) => setSettings((s) => ({ ...s, adminPhone: v }))}
+          placeholder="+226 70 00 00 01"
+          disabled={!isAdmin}
+        />
+        <Field
+          label="Téléphone Surveillance (affiché dans l'app mobile)"
+          value={settings.surveillancePhone || ""}
+          onChange={(v) => setSettings((s) => ({ ...s, surveillancePhone: v }))}
+          placeholder="+226 70 00 00 02"
+          disabled={!isAdmin}
+        />
+        <Field
+          label="Adresse"
+          value={settings.address || ""}
+          onChange={(v) => setSettings((s) => ({ ...s, address: v }))}
+          placeholder="Secteur 15, Ouagadougou"
+          disabled={!isAdmin}
+        />
+        <Field
+          label="Horaires du secrétariat"
+          value={settings.secretariatHours || ""}
+          onChange={(v) => setSettings((s) => ({ ...s, secretariatHours: v }))}
+          placeholder="Lundi-Vendredi, 7h30-16h30"
+          disabled={!isAdmin}
+        />
         <Field
           label="Site web de l'école (affiché dans l'app mobile)"
           value={settings.publicWebsiteUrl || ""}

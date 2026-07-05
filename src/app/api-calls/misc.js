@@ -14,6 +14,17 @@ export const riskApi = {
   list: (term, academicYear) => api.get(`/risk/students?term=${term}&academicYear=${academicYear}`),
 };
 
+export const announcementsApi = {
+  list: () => api.get("/announcements"),
+  create: (payload) => api.post("/announcements", payload),
+  remove: (id) => api.del(`/announcements/${id}`),
+};
+
+export const reportsApi = {
+  list: () => api.get("/reports"),
+  markResolved: (id) => api.put(`/reports/${id}/resolve`),
+};
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api");
 
 export const exportUrls = {
