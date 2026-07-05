@@ -3,9 +3,9 @@
 export default function Modal({ open, onClose, title, children }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-4">
-      <div className="w-full max-w-md rounded-card border border-border bg-surface p-6 shadow-card">
-        <div className="mb-4 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-4 py-8">
+      <div className="flex max-h-full w-full max-w-md flex-col rounded-card border border-border bg-surface shadow-card">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-base font-semibold text-ink">{title}</h2>
           <button
             onClick={onClose}
@@ -15,7 +15,7 @@ export default function Modal({ open, onClose, title, children }) {
             ✕
           </button>
         </div>
-        {children}
+        <div className="overflow-y-auto px-6 py-4">{children}</div>
       </div>
     </div>
   );

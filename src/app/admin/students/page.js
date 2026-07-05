@@ -17,6 +17,10 @@ export default function StudentsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [bulkText, setBulkText] = useState("");
+  const [bulkResults, setBulkResults] = useState(null);
+  const [bulkError, setBulkError] = useState("");
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
   const [successInfo, setSuccessInfo] = useState(null);
@@ -79,12 +83,36 @@ export default function StudentsPage() {
     await submitCreate();
   }
 
+  async function handleBulkImport(e) {
+    e.preventDefault();
+    setBulkError("");
+    setBulkResults(null);
+    try {
+      const lines = bulkText.split("\n").map((l) => l.trim()).filter(Boolean);
+      const rows = lines.map((line) => {
+        const [studentFirstName, studentLastName, birthDate, className, parentFirstName, parentLastName, parentPhone] =
+          line.split(";").map((v) => v.trim());
+        return { studentFirstName, studentLastName, birthDate: birthDate || undefined, className: className || undefined, parentFirstName, parentLastName, parentPhone };
+      });
+      const results = await studentsApi.bulkCreate(rows);
+      setBulkResults(results);
+      load();
+    } catch (err) {
+      setBulkError(err.message);
+    }
+  }
+
   return (
     <div>
       <PageHeader
         title="Élèves"
         description="Inscription et suivi des élèves"
-        action={<Button onClick={() => setModalOpen(true)}>+ Inscrire un élève</Button>}
+        action={
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setBulkModalOpen(true)}>Import en masse</Button>
+            <Button onClick={() => setModalOpen(true)}>+ Inscrire un élève</Button>
+          </div>
+        }
       />
 
       <form onSubmit={handleSearch} className="mb-4 flex gap-2">
@@ -178,6 +206,60 @@ export default function StudentsPage() {
 
             {error && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
             <Button type="submit" className="w-full">Inscrire l'élève</Button>
+          </form>
+        )}
+      </Modal>
+
+      <Modal
+        open={bulkModalOpen}
+        onClose={() => { setBulkModalOpen(false); setBulkResults(null); setBulkText(""); setBulkError(""); }}
+        title="Import en masse"
+      >
+        {bulkResults ? (
+          <div className="space-y-3">
+            <p className="text-sm text-muted">
+              {bulkResults.filter((r) => r.success).length} réussite(s), {bulkResults.filter((r) => !r.success).length} échec(s).
+            </p>
+            <div className="max-h-80 space-y-2 overflow-y-auto">
+              {bulkResults.map((r, i) => (
+                <div key={i} className={`rounded-md px-3 py-2 text-sm ${r.success ? "bg-emerald-soft text-emerald" : "bg-rose-soft text-rose"}`}>
+                  <p className="font-medium">{r.studentName}</p>
+                  {r.success ? (
+                    <p>
+                      Matricule : <span className="font-mono">{r.matricule}</span>
+                      {r.parentPassword && <> — Mot de passe parent : <span className="font-mono">{r.parentPassword}</span></>}
+                    </p>
+                  ) : (
+                    <p>{r.error}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+            <Button onClick={() => { setBulkModalOpen(false); setBulkResults(null); setBulkText(""); }} className="w-full">
+              Fermer
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleBulkImport} className="space-y-3">
+            <p className="text-sm text-muted">
+              Une ligne par élève, valeurs séparées par des points-virgules (<code>;</code>) :
+            </p>
+            <p className="rounded-md bg-bg px-3 py-2 font-mono text-xs text-ink">
+              Prénom;Nom;DateNaissance(AAAA-MM-JJ, optionnel);Classe(optionnel);PrénomParent;NomParent;TéléphoneParent
+            </p>
+            <p className="rounded-md bg-bg px-3 py-2 font-mono text-xs text-muted">
+              Awa;Ouédraogo;2014-03-12;6e A;Moussa;Ouédraogo;+226 70 00 00 00
+            </p>
+            <textarea
+              required
+              rows={8}
+              value={bulkText}
+              onChange={(e) => setBulkText(e.target.value)}
+              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 font-mono text-xs outline-none"
+              placeholder="Awa;Ouédraogo;2014-03-12;6e A;Moussa;Ouédraogo;+226 70 00 00 00"
+            />
+            {bulkError && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{bulkError}</p>}
+            <Button type="submit" className="w-full">Importer</Button>
           </form>
         )}
       </Modal>
