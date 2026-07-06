@@ -6,14 +6,15 @@ import { parentsApi } from "@/app/api-calls/directory";
 
 export default function ParentsPage() {
   const [parents, setParents] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [resetInfo, setResetInfo] = useState(null);
 
-  async function load() {
+  async function load(searchValue) {
     setLoading(true);
     try {
-      setParents(await parentsApi.list());
+      setParents(await parentsApi.list(searchValue));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -24,6 +25,11 @@ export default function ParentsPage() {
   useEffect(() => {
     load();
   }, []);
+
+  function handleSearch(e) {
+    e.preventDefault();
+    load(search);
+  }
 
   async function handleReset(parent) {
     if (!confirm(`Réinitialiser le mot de passe de ${parent.firstName} ${parent.lastName} ?`)) return;
@@ -38,6 +44,21 @@ export default function ParentsPage() {
   return (
     <div>
       <PageHeader title="Parents" description="Comptes des parents et tuteurs" />
+
+      <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Rechercher un parent (nom ou téléphone)…"
+          className="focus-ring w-full max-w-sm rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+        />
+        <Button variant="outline" type="submit">Rechercher</Button>
+        {search && (
+          <Button variant="outline" type="button" onClick={() => { setSearch(""); load(); }}>
+            Réinitialiser
+          </Button>
+        )}
+      </form>
 
       {resetInfo && (
         <p className="mb-4 rounded-lg bg-emerald-soft px-3 py-2 text-sm text-emerald">

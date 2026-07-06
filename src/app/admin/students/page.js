@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Copy, MessageCircle, Trash2 } from "lucide-react";
 import { PageHeader, DataTable, Button, Avatar } from "@/components/ui";
 import Modal from "@/components/Modal";
+import ShareCredentials from "@/components/ShareCredentials";
+import { useAuth } from "@/context/AuthContext";
 import { studentsApi } from "@/app/api-calls/students";
 import { classesApi } from "@/app/api-calls/directory";
 import { parseSpreadsheetFile, extractPdfText, downloadImportTemplate } from "./importUtils";
@@ -13,6 +16,8 @@ const emptyForm = {
 };
 
 export default function StudentsPage() {
+  const { user } = useAuth();
+  const schoolName = user?.school?.name || "l'école";
   const [students, setStudents] = useState([]);
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +32,7 @@ export default function StudentsPage() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
   const [successInfo, setSuccessInfo] = useState(null);
+  const [copiedFeedback, setCopiedFeedback] = useState(false);
   const [duplicateConfirm, setDuplicateConfirm] = useState(null);
 
   async function load() {
@@ -67,7 +73,12 @@ export default function StudentsPage() {
         ...(linkToExistingParentId && { linkToExistingParentId }),
       };
       const result = await studentsApi.create(payload);
-      setSuccessInfo({ matricule: result.matricule, parentPassword: result.parentPassword });
+      setSuccessInfo({
+        matricule: result.matricule,
+        parentPassword: result.parentPassword,
+        studentName: `${form.student.firstName} ${form.student.lastName}`,
+        parentPhone: form.parent.phone,
+      });
       setModalOpen(false);
       resetModal();
       load();
@@ -84,6 +95,23 @@ export default function StudentsPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     await submitCreate();
+  }
+
+  async function handleDeleteStudent(student) {
+    const fullName = `${student.firstName} ${student.lastName}`;
+    const typed = window.prompt(
+      `⚠️ Cette action est définitive et supprimera aussi toutes ses notes et incidents.\n\nPour confirmer, tape exactement le nom de l'élève : ${fullName}`
+    );
+    if (typed !== fullName) {
+      if (typed !== null) alert("Le nom tapé ne correspond pas — suppression annulée.");
+      return;
+    }
+    try {
+      await studentsApi.remove(student.id);
+      load();
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   async function handleBulkImport(e) {
@@ -174,6 +202,13 @@ export default function StudentsPage() {
           {successInfo.parentPassword && (
             <p>Mot de passe du parent : <span className="font-mono">{successInfo.parentPassword}</span> — transmettez-le au parent.</p>
           )}
+          <ShareCredentials
+            schoolName={schoolName}
+            studentName={successInfo.studentName}
+            matricule={successInfo.matricule}
+            password={successInfo.parentPassword}
+            phone={successInfo.parentPhone}
+          />
         </div>
       )}
       {error && <p className="mb-4 rounded-lg bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
@@ -191,6 +226,15 @@ export default function StudentsPage() {
               key: "parents",
               header: "Parent(s)",
               render: (r) => r.parents?.map((p) => `${p.parent.firstName} ${p.parent.lastName}`).join(", ") || "—",
+            },
+            {
+              key: "delete",
+              header: "",
+              render: (r) => (
+                <button onClick={() => handleDeleteStudent(r)} className="text-rose hover:opacity-70" aria-label="Supprimer">
+                  <Trash2 size={16} />
+                </button>
+              ),
             },
           ]}
           rows={students}
@@ -267,10 +311,19 @@ export default function StudentsPage() {
                 <div key={i} className={`rounded-md px-3 py-2 text-sm ${r.success ? "bg-emerald-soft text-emerald" : "bg-rose-soft text-rose"}`}>
                   <p className="font-medium">{r.studentName}</p>
                   {r.success ? (
-                    <p>
-                      Matricule : <span className="font-mono">{r.matricule}</span>
-                      {r.parentPassword && <> — Mot de passe parent : <span className="font-mono">{r.parentPassword}</span></>}
-                    </p>
+                    <>
+                      <p>
+                        Matricule : <span className="font-mono">{r.matricule}</span>
+                        {r.parentPassword && <> — Mot de passe parent : <span className="font-mono">{r.parentPassword}</span></>}
+                      </p>
+                      <ShareCredentials
+                        schoolName={schoolName}
+                        studentName={r.studentName}
+                        matricule={r.matricule}
+                        password={r.parentPassword}
+                        phone={r.parentPhone}
+                      />
+                    </>
                   ) : (
                     <p>{r.error}</p>
                   )}

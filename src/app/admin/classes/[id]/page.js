@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Trash2 } from "lucide-react";
-import { PageHeader, Button } from "@/components/ui";
+import { ArrowLeft, Trash2, Users, TrendingUp, AlertTriangle } from "lucide-react";
+import { PageHeader, Button, StatCard } from "@/components/ui";
 import { classesApi, subjectsApi } from "@/app/api-calls/directory";
+
+const TERM = "TRIMESTRE_1";
+const ACADEMIC_YEAR = "2025-2026";
 
 export default function ClassDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const [cls, setCls] = useState(null);
+  const [stats, setStats] = useState(null);
   const [allSubjects, setAllSubjects] = useState([]);
   const [subjectId, setSubjectId] = useState("");
   const [coefficient, setCoefficient] = useState("1");
@@ -17,9 +21,14 @@ export default function ClassDetailPage() {
 
   async function load() {
     try {
-      const [c, s] = await Promise.all([classesApi.getById(id), subjectsApi.list()]);
+      const [c, s, st] = await Promise.all([
+        classesApi.getById(id),
+        subjectsApi.list(),
+        classesApi.stats(id, TERM, ACADEMIC_YEAR).catch(() => null),
+      ]);
       setCls(c);
       setAllSubjects(s);
+      setStats(st);
     } catch (err) {
       setError(err.message);
     }
@@ -73,6 +82,19 @@ export default function ClassDetailPage() {
       />
 
       {error && <p className="mb-4 rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
+
+      {stats && (
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatCard label="Effectif" value={stats.studentCount} icon={Users} tone="primary" />
+          <StatCard
+            label="Moyenne générale"
+            value={stats.average > 0 ? `${stats.average}/20` : "—"}
+            icon={TrendingUp}
+            tone="emerald"
+          />
+          <StatCard label="Incidents ce mois-ci" value={stats.incidentCountThisMonth} icon={AlertTriangle} tone="rose" />
+        </div>
+      )}
 
       <div className="mb-6 overflow-hidden rounded-card border border-border bg-surface shadow-card">
         <table className="w-full text-left text-sm">

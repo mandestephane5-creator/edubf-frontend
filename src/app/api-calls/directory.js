@@ -14,6 +14,7 @@ export const classesApi = {
   remove: (id) => api.del(`/classes/${id}`),
   assignSubject: (id, payload) => api.post(`/classes/${id}/subjects`, payload),
   removeSubject: (id, subjectId) => api.del(`/classes/${id}/subjects/${subjectId}`),
+  stats: (id, term, academicYear) => api.get(`/classes/${id}/stats?term=${term}&academicYear=${academicYear}`),
 };
 
 export const subjectsApi = {

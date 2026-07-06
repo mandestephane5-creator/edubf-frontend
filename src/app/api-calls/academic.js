@@ -12,6 +12,7 @@ export const gradesApi = {
     api.get(`/grades/student/${studentId}/average?term=${term}&academicYear=${academicYear}`),
   classRanking: (classId, term, academicYear) =>
     api.get(`/grades/class/${classId}/ranking?term=${term}&academicYear=${academicYear}`),
+  auditLog: () => api.get("/grades/audit-log"),
 };
 
 export const incidentsApi = {

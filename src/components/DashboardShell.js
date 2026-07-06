@@ -3,16 +3,21 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Shield, Bell, LogOut, Search } from "lucide-react";
+import { Shield, Bell, LogOut, Search, MoreHorizontal, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { notificationsApi } from "@/app/api-calls/misc";
 import LoadingScreen from "./LoadingScreen";
+
+// Les 4 pages les plus utilisées, accessibles directement depuis la barre du bas sur mobile.
+// Tout le reste est regroupé dans le tiroir "Plus".
+const PRIMARY_MOBILE_HREFS = ["/admin", "/admin/students", "/admin/grades", "/admin/incidents"];
 
 export default function DashboardShell({ navItems, children }) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login");
@@ -26,14 +31,26 @@ export default function DashboardShell({ navItems, children }) {
       .catch(() => {});
   }, [user]);
 
+  // Ferme le tiroir "Plus" automatiquement à chaque changement de page
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [pathname]);
+
   if (loading || !user) {
     return <LoadingScreen />;
   }
 
   const roleLabel = user.role === "ADMIN" ? "Directrice" : "Surveillant";
+  const primaryItems = PRIMARY_MOBILE_HREFS.map((href) => navItems.find((i) => i.href === href)).filter(Boolean);
+  const moreItems = navItems.filter((i) => !PRIMARY_MOBILE_HREFS.includes(i.href));
+
+  function isActive(href) {
+    return pathname === href || pathname.startsWith(href + "/");
+  }
 
   return (
     <div className="flex min-h-screen bg-bg">
+      {/* ----- Barre latérale (desktop uniquement) ----- */}
       <aside className="hidden w-60 shrink-0 flex-col bg-primary text-white md:flex">
         <div className="flex items-center gap-2.5 px-5 py-6">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
@@ -47,7 +64,7 @@ export default function DashboardShell({ navItems, children }) {
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3">
           {navItems.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(item.href + "/");
+            const active = isActive(item.href);
             const Icon = item.icon;
             return (
               <Link
@@ -97,8 +114,81 @@ export default function DashboardShell({ navItems, children }) {
             </Link>
           </div>
         </header>
-        <main className="flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
+
+        {/* Espace en bas sur mobile pour ne pas passer sous la barre de navigation */}
+        <main className="flex-1 px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8">{children}</main>
       </div>
+
+      {/* ----- Barre de navigation du bas (mobile uniquement) ----- */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-border bg-surface shadow-[0_-2px_10px_rgba(18,24,74,0.06)] md:hidden">
+        {primaryItems.map((item) => {
+          const active = isActive(item.href);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`focus-ring flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${
+                active ? "text-primary" : "text-muted"
+              }`}
+            >
+              <Icon size={20} strokeWidth={2} />
+              <span className="truncate px-1">{item.label}</span>
+            </Link>
+          );
+        })}
+        <button
+          onClick={() => setMoreOpen(true)}
+          className={`focus-ring flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${
+            moreOpen ? "text-primary" : "text-muted"
+          }`}
+        >
+          <MoreHorizontal size={20} strokeWidth={2} />
+          <span>Plus</span>
+        </button>
+      </nav>
+
+      {/* ----- Tiroir "Plus" (mobile uniquement) ----- */}
+      {moreOpen && (
+        <div className="fixed inset-0 z-50 flex items-end md:hidden" onClick={() => setMoreOpen(false)}>
+          <div className="absolute inset-0 bg-ink/40" />
+          <div
+            className="relative z-10 max-h-[75vh] w-full overflow-y-auto rounded-t-2xl bg-surface p-4 pb-8 shadow-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-sm font-semibold text-ink">Toutes les pages</p>
+              <button onClick={() => setMoreOpen(false)} aria-label="Fermer" className="focus-ring rounded-md p-1.5 text-muted hover:bg-bg">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {moreItems.map((item) => {
+                const active = isActive(item.href);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`focus-ring flex flex-col items-center gap-2 rounded-xl border p-3 text-center text-xs font-medium ${
+                      active ? "border-primary bg-primary-soft text-primary" : "border-border text-ink"
+                    }`}
+                  >
+                    <Icon size={20} strokeWidth={2} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+            <button
+              onClick={() => { setMoreOpen(false); logout(); }}
+              className="focus-ring mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-medium text-rose"
+            >
+              <LogOut size={16} /> Déconnexion
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
