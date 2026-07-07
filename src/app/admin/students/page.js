@@ -190,7 +190,7 @@ export default function StudentsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un élève ou un matricule…"
-          className="focus-ring w-full max-w-sm rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+          className="focus-ring w-full max-w-sm rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
         />
         <Button variant="outline" type="submit">Rechercher</Button>
       </form>
@@ -270,7 +270,7 @@ export default function StudentsPage() {
                   <select
                     value={form.student.classId}
                     onChange={(e) => setForm((f) => ({ ...f, student: { ...f.student, classId: e.target.value } }))}
-                    className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+                    className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
                   >
                     <option value="">— Aucune classe —</option>
                     {classes.map((c) => (
@@ -368,7 +368,7 @@ export default function StudentsPage() {
               rows={8}
               value={bulkText}
               onChange={(e) => setBulkText(e.target.value)}
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 font-mono text-xs outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 font-mono text-xs outline-none"
               placeholder="Awa;Ouédraogo;2014-03-12;6e A;Moussa;Ouédraogo;+226 70 00 00 00"
             />
             {bulkError && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{bulkError}</p>}
@@ -390,7 +390,7 @@ function TextField({ label, value, onChange, type = "text", required = true, pla
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+        className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
       />
     </label>
   );

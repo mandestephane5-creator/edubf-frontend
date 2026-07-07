@@ -1,23 +1,29 @@
 /** @type {import('tailwindcss').Config} */
+function withOpacity(variableName) {
+  return ({ opacityValue }) =>
+    opacityValue !== undefined ? `rgb(var(${variableName}) / ${opacityValue})` : `rgb(var(${variableName}))`;
+}
+
 module.exports = {
+  darkMode: "class",
   content: ["./src/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
-        bg: "#F4F6FF",
-        surface: "#FFFFFF",
-        ink: "#12184A",
-        muted: "#5A5F8A",
-        border: "#E4E8FB",
+        bg: withOpacity("--color-bg"),
+        surface: withOpacity("--color-surface"),
+        ink: withOpacity("--color-ink"),
+        muted: withOpacity("--color-muted"),
+        border: withOpacity("--color-border"),
         primary: {
-          DEFAULT: "#1E3AE8",
-          light: "#4A63ED",
-          dark: "#1730BD",
-          soft: "#D6DCFB",
+          DEFAULT: withOpacity("--color-primary"),
+          light: withOpacity("--color-primary-light"),
+          dark: withOpacity("--color-primary-dark"),
+          soft: withOpacity("--color-primary-soft"),
         },
-        rose: { DEFAULT: "#C2323E", soft: "#FFD9DC" },
-        emerald: { DEFAULT: "#1C8A5A", soft: "#D9F3E4" },
-        amber: { DEFAULT: "#B4790A", soft: "#FCEBC9" },
+        rose: { DEFAULT: withOpacity("--color-rose"), soft: withOpacity("--color-rose-soft") },
+        emerald: { DEFAULT: withOpacity("--color-emerald"), soft: withOpacity("--color-emerald-soft") },
+        amber: { DEFAULT: withOpacity("--color-amber"), soft: withOpacity("--color-amber-soft") },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "sans-serif"],

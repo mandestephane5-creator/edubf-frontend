@@ -78,7 +78,7 @@ export default function TimetablePage() {
           <select
             value={classId}
             onChange={(e) => setClassId(e.target.value)}
-            className="focus-ring rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+            className="focus-ring rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
           >
             <option value="">Choisir une classe</option>
             {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}

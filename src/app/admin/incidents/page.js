@@ -95,7 +95,7 @@ export default function IncidentsPage() {
             type="month"
             value={month}
             onChange={(e) => setMonth(e.target.value)}
-            className="focus-ring rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+            className="focus-ring rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
           />
         </label>
       </div>
@@ -134,7 +134,7 @@ export default function IncidentsPage() {
               required
               value={form.date}
               onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
             />
           </label>
 
@@ -147,7 +147,7 @@ export default function IncidentsPage() {
                   required
                   value={form.time}
                   onChange={(e) => setForm((f) => ({ ...f, time: e.target.value }))}
-                  className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+                  className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
                 />
               </label>
               <Select label="Matière" value={form.subjectId} onChange={(v) => setForm((f) => ({ ...f, subjectId: v }))} placeholder="Choisir une matière">
@@ -160,7 +160,7 @@ export default function IncidentsPage() {
                   value={form.motif}
                   onChange={(e) => setForm((f) => ({ ...f, motif: e.target.value }))}
                   placeholder="Bavardage, indiscipline…"
-                  className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+                  className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
                 />
               </label>
             </>
@@ -181,7 +181,7 @@ function Select({ label, value, onChange, children, placeholder }) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="focus-ring rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+        className="focus-ring rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
       >
         {placeholder && <option value="">{placeholder}</option>}
         {children}

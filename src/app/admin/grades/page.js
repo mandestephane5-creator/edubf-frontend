@@ -260,7 +260,7 @@ export default function GradesPage() {
                         value={draft[s.id] ?? ""}
                         onChange={(e) => setDraft((d) => ({ ...d, [s.id]: e.target.value }))}
                         placeholder="—"
-                        className="focus-ring w-20 rounded-md border border-border bg-white px-2 py-1.5 text-sm outline-none"
+                        className="focus-ring w-20 rounded-md border border-border bg-surface px-2 py-1.5 text-sm outline-none"
                       />
                     </td>
                   </tr>
@@ -350,7 +350,7 @@ export default function GradesPage() {
                 required
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
-                className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+                className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
               />
             </label>
             {error && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
@@ -422,7 +422,7 @@ function Select({ label, value, onChange, children, placeholder }) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="focus-ring rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+        className="focus-ring rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
       >
         {placeholder && <option value="">{placeholder}</option>}
         {children}
@@ -439,7 +439,7 @@ function TextField({ label, value, onChange, placeholder }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="focus-ring rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+        className="focus-ring rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
       />
     </label>
   );

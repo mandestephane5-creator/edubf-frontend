@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Users, School, AlertTriangle, Bell } from "lucide-react";
 import { PageHeader, StatCard } from "@/components/ui";
+import { useAuth } from "@/context/AuthContext";
 import { studentsApi } from "@/app/api-calls/students";
 import { classesApi } from "@/app/api-calls/directory";
 import { riskApi } from "@/app/api-calls/misc";
@@ -12,6 +13,7 @@ const TERM = "TRIMESTRE_1";
 const ACADEMIC_YEAR = "2025-2026";
 
 export default function AdminOverviewPage() {
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState("");
@@ -36,7 +38,7 @@ export default function AdminOverviewPage() {
 
   return (
     <div>
-      <PageHeader title="Tableau de bord" description="Aperçu de l'école Sainte Marie" />
+      <PageHeader title="Tableau de bord" description={`Aperçu de l'école ${user?.school?.name || ""}`} />
 
       {error && <p className="mb-4 rounded-lg bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
 

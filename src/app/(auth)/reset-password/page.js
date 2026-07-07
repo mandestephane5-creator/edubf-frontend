@@ -49,7 +49,7 @@ function ResetPasswordForm() {
           required
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+          className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
         />
       </label>
       {error && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}

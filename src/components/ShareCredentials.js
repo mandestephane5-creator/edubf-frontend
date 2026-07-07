@@ -49,7 +49,7 @@ export default function ShareCredentials({ schoolName, studentName, matricule, p
       </button>
       <button
         onClick={handleCopy}
-        className="focus-ring flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-1.5 text-xs font-medium text-ink hover:bg-bg"
+        className="focus-ring flex items-center gap-1.5 rounded-md border border-border bg-surface px-3 py-1.5 text-xs font-medium text-ink hover:bg-bg"
       >
         {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? "Copié !" : "Copier les identifiants"}
       </button>

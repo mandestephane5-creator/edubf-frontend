@@ -93,7 +93,7 @@ export default function AnnouncementsPage() {
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="Rentrée scolaire, réunion parents-professeurs…"
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
             />
           </label>
           <label className="block">
@@ -103,7 +103,7 @@ export default function AnnouncementsPage() {
               rows={4}
               value={form.message}
               onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
             />
           </label>
           <p className="text-xs text-muted">Sera envoyée immédiatement à tous les parents (notification + push).</p>

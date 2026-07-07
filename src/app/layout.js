@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -9,15 +10,33 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Sainte Marie — EduBF",
-  description: "Plateforme de gestion scolaire de l'école Sainte Marie",
+  title: "Orivex — Gestion scolaire",
+  description: "Orivex, la plateforme de gestion scolaire complète",
 };
+
+// Applique la classe .dark AVANT le premier rendu (évite un flash clair→sombre
+// au chargement si l'utilisateur avait déjà choisi le mode sombre).
+const themeInitScript = `
+  (function() {
+    try {
+      var saved = localStorage.getItem('orivex_theme_preference');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = saved ? saved === 'dark' : prefersDark;
+      if (isDark) document.documentElement.classList.add('dark');
+    } catch (e) {}
+  })();
+`;
 
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className={`${inter.variable} font-sans bg-bg text-ink antialiased`}>
-        <AuthProvider>{children}</AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

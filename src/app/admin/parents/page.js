@@ -50,7 +50,7 @@ export default function ParentsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un parent (nom ou téléphone)…"
-          className="focus-ring w-full max-w-sm rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+          className="focus-ring w-full max-w-sm rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
         />
         <Button variant="outline" type="submit">Rechercher</Button>
         {search && (

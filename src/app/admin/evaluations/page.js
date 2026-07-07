@@ -155,7 +155,7 @@ export default function EvaluationsPage() {
               required
               value={devoirForm.date}
               onChange={(e) => setDevoirForm((f) => ({ ...f, date: e.target.value }))}
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
             />
           </label>
           {error && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
@@ -172,7 +172,7 @@ export default function EvaluationsPage() {
               required
               value={compoForm.date}
               onChange={(e) => setCompoForm((f) => ({ ...f, date: e.target.value }))}
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
             />
           </label>
           <label className="block">
@@ -181,7 +181,7 @@ export default function EvaluationsPage() {
               value={compoForm.label}
               onChange={(e) => setCompoForm((f) => ({ ...f, label: e.target.value }))}
               placeholder="Ex: Composition du 1er trimestre"
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
             />
           </label>
           {error && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
@@ -199,7 +199,7 @@ function Select({ label, value, onChange, children, placeholder }) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="focus-ring rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+        className="focus-ring rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
       >
         {placeholder && <option value="">{placeholder}</option>}
         {children}

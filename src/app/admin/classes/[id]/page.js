@@ -138,7 +138,7 @@ export default function ClassDetailPage() {
               required
               value={subjectId}
               onChange={(e) => setSubjectId(e.target.value)}
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
             >
               <option value="">Choisir…</option>
               {availableSubjects.map((s) => (
@@ -156,7 +156,7 @@ export default function ClassDetailPage() {
               required
               value={coefficient}
               onChange={(e) => setCoefficient(e.target.value)}
-              className="focus-ring w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none"
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
             />
           </label>
           <Button type="submit" disabled={!subjectId}>Ajouter</Button>

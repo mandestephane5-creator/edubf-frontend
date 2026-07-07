@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Shield, Bell, LogOut, Search, MoreHorizontal, X } from "lucide-react";
+import { Bell, LogOut, Search, MoreHorizontal, X, Moon, Sun, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
 import { notificationsApi } from "@/app/api-calls/misc";
+import { searchApi } from "@/app/api-calls/misc";
 import LoadingScreen from "./LoadingScreen";
 
 // Les 4 pages les plus utilisées, accessibles directement depuis la barre du bas sur mobile.
@@ -14,10 +17,18 @@ const PRIMARY_MOBILE_HREFS = ["/admin", "/admin/students", "/admin/grades", "/ad
 
 export default function DashboardShell({ navItems, children }) {
   const { user, loading, logout } = useAuth();
+  const { isDark, toggleDarkMode } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
   const [moreOpen, setMoreOpen] = useState(false);
+
+  // ---- Recherche d'élève (nom, prénom, matricule) ----
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const searchBoxRef = useRef(null);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login");
@@ -34,7 +45,39 @@ export default function DashboardShell({ navItems, children }) {
   // Ferme le tiroir "Plus" automatiquement à chaque changement de page
   useEffect(() => {
     setMoreOpen(false);
+    setSearchOpen(false);
   }, [pathname]);
+
+  // Recherche avec un léger délai pour ne pas interroger le serveur à chaque frappe
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setSearching(true);
+    const timeout = setTimeout(async () => {
+      try {
+        const results = await searchApi.searchStudents(searchQuery.trim());
+        setSearchResults(results);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
+  // Ferme le menu de résultats au clic en dehors
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setSearchOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   if (loading || !user) {
     return <LoadingScreen />;
@@ -53,11 +96,11 @@ export default function DashboardShell({ navItems, children }) {
       {/* ----- Barre latérale (desktop uniquement) ----- */}
       <aside className="hidden w-60 shrink-0 flex-col bg-primary text-white md:flex">
         <div className="flex items-center gap-2.5 px-5 py-6">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-            <Shield size={19} className="text-white" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white p-1.5">
+            <Image src="/logo-orivex-emblem.png" alt="Orivex" width={28} height={28} className="h-full w-full object-contain" />
           </div>
           <div>
-            <p className="text-sm font-semibold leading-none">Sainte Marie</p>
+            <p className="text-sm font-semibold leading-none">Orivex</p>
             <p className="mt-1 text-[11px] text-white/60">Gestion scolaire</p>
           </div>
         </div>
@@ -99,11 +142,52 @@ export default function DashboardShell({ navItems, children }) {
 
       <div className="flex min-h-screen flex-1 flex-col">
         <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:px-8">
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm text-muted md:w-72">
-            <Search size={16} />
-            <span className="hidden sm:inline">Rechercher un élève…</span>
+          <div ref={searchBoxRef} className="relative md:w-80">
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm">
+              <Search size={16} className="shrink-0 text-muted" />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchOpen(true)}
+                placeholder="Rechercher un élève (nom, matricule)…"
+                className="w-full bg-transparent text-ink outline-none placeholder:text-muted"
+              />
+            </div>
+
+            {searchOpen && searchQuery.trim() && (
+              <div className="absolute left-0 right-0 top-full z-30 mt-1.5 max-h-80 overflow-y-auto rounded-lg border border-border bg-surface shadow-card">
+                {searching ? (
+                  <p className="px-3 py-3 text-sm text-muted">Recherche…</p>
+                ) : searchResults.length === 0 ? (
+                  <p className="px-3 py-3 text-sm text-muted">Aucun élève trouvé.</p>
+                ) : (
+                  searchResults.map((s) => (
+                    <Link
+                      key={s.id}
+                      href={`/admin/students?q=${encodeURIComponent(s.matricule)}`}
+                      onClick={() => setSearchOpen(false)}
+                      className="flex items-center justify-between border-b border-border px-3 py-2.5 text-sm last:border-0 hover:bg-bg"
+                    >
+                      <span className="flex items-center gap-2 text-ink">
+                        <UserIcon size={14} className="text-muted" />
+                        {s.firstName} {s.lastName}
+                      </span>
+                      <span className="text-xs text-muted">{s.matricule} · {s.class?.name || "—"}</span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            )}
           </div>
-          <div className="ml-auto flex items-center gap-4">
+
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={toggleDarkMode}
+              aria-label="Basculer le mode sombre"
+              className="focus-ring rounded-full p-2 text-muted hover:bg-bg"
+            >
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
             <Link href="/admin/notifications" className="focus-ring relative rounded-full p-2 text-muted hover:bg-bg" aria-label="Notifications">
               <Bell size={19} />
               {unreadCount > 0 && (
@@ -181,8 +265,14 @@ export default function DashboardShell({ navItems, children }) {
               })}
             </div>
             <button
+              onClick={toggleDarkMode}
+              className="focus-ring mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-medium text-ink"
+            >
+              {isDark ? <Sun size={16} /> : <Moon size={16} />} {isDark ? "Mode clair" : "Mode sombre"}
+            </button>
+            <button
               onClick={() => { setMoreOpen(false); logout(); }}
-              className="focus-ring mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-medium text-rose"
+              className="focus-ring mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-medium text-rose"
             >
               <LogOut size={16} /> Déconnexion
             </button>

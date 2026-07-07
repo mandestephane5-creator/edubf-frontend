@@ -4,11 +4,46 @@
 
 :root {
   --font-sans: "Inter", sans-serif;
+
+  --color-bg: 244 246 255;
+  --color-surface: 255 255 255;
+  --color-ink: 18 24 74;
+  --color-muted: 90 95 138;
+  --color-border: 228 232 251;
+  --color-primary: 30 58 232;
+  --color-primary-light: 74 99 237;
+  --color-primary-dark: 23 48 189;
+  --color-primary-soft: 214 220 251;
+  --color-rose: 194 50 62;
+  --color-rose-soft: 255 217 220;
+  --color-emerald: 28 138 90;
+  --color-emerald-soft: 217 243 228;
+  --color-amber: 180 121 10;
+  --color-amber-soft: 252 235 201;
+}
+
+.dark {
+  --color-bg: 12 16 40;
+  --color-surface: 22 26 58;
+  --color-ink: 238 240 255;
+  --color-muted: 148 154 194;
+  --color-border: 42 47 92;
+  --color-primary: 91 123 255;
+  --color-primary-light: 123 149 255;
+  --color-primary-dark: 72 99 214;
+  --color-primary-soft: 35 42 94;
+  --color-rose: 255 107 122;
+  --color-rose-soft: 58 31 42;
+  --color-emerald: 62 217 140;
+  --color-emerald-soft: 23 59 44;
+  --color-amber: 240 178 61;
+  --color-amber-soft: 59 46 20;
 }
 
 body {
-  background-color: #F4F6FF;
-  color: #12184A;
+  background-color: rgb(var(--color-bg));
+  color: rgb(var(--color-ink));
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -20,6 +55,6 @@ body {
 }
 
 .focus-ring:focus-visible {
-  outline: 2px solid #1E3AE8;
+  outline: 2px solid rgb(var(--color-primary));
   outline-offset: 2px;
 }
