@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Orivex — Gestion scolaire",
-  description: "Orivex, la plateforme de gestion scolaire complète",
+  title: "Vorelix — Gestion scolaire",
+  description: "Vorelix, la plateforme de gestion scolaire complète",
 };
 
 // Applique la classe .dark AVANT le premier rendu (évite un flash clair→sombre
@@ -19,7 +19,7 @@ export const metadata = {
 const themeInitScript = `
   (function() {
     try {
-      var saved = localStorage.getItem('orivex_theme_preference');
+      var saved = localStorage.getItem('vorelix_theme_preference');
       var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       var isDark = saved ? saved === 'dark' : prefersDark;
       if (isDark) document.documentElement.classList.add('dark');

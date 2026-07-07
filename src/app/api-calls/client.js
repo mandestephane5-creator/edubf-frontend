@@ -3,7 +3,7 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 /**
- * Client HTTP minimal vers le backend Orivex.
+ * Client HTTP minimal vers le backend Vorelix.
  * Gère automatiquement le token JWT stocké côté client et le rafraîchissement.
  * Ce fichier ne contient AUCUNE logique métier — uniquement l'appel réseau.
  */
@@ -49,7 +49,7 @@ async function tryRefresh() {
 }
 
 /**
- * Appelle l'API Orivex. Rafraîchit automatiquement le token en cas de 401
+ * Appelle l'API Vorelix. Rafraîchit automatiquement le token en cas de 401
  * (une seule tentative) puis relance la requête initiale.
  */
 export async function apiFetch(path, options = {}, { retry = true } = {}) {

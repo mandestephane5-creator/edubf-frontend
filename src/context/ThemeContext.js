@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext(null);
-const STORAGE_KEY = "orivex_theme_preference";
+const STORAGE_KEY = "vorelix_theme_preference";
 
 export function ThemeProvider({ children }) {
   const [isDark, setIsDark] = useState(false);

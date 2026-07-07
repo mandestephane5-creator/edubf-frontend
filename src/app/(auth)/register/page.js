@@ -41,7 +41,7 @@ export default function RegisterPage() {
   return (
     <div className="rounded-card border border-border bg-surface p-6 shadow-card">
       <h1 className="text-lg font-semibold">Créer votre école</h1>
-      <p className="mt-1 text-sm text-muted">Un espace Orivex dédié, en quelques secondes.</p>
+      <p className="mt-1 text-sm text-muted">Un espace Vorelix dédié, en quelques secondes.</p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         <Field label="Nom de l'école" value={form.schoolName} onChange={set("schoolName")} placeholder="Sainte Marie" />
