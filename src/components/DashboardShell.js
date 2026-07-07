@@ -95,14 +95,11 @@ export default function DashboardShell({ navItems, children }) {
     <div className="flex min-h-screen bg-bg">
       {/* ----- Barre latérale (desktop uniquement) ----- */}
       <aside className="hidden w-60 shrink-0 flex-col bg-primary text-white md:flex">
-        <div className="flex items-center gap-2.5 px-5 py-6">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white p-1.5">
-            <Image src="/logo-orivex-emblem.png" alt="Orivex" width={28} height={28} className="h-full w-full object-contain" />
+        <div className="px-5 py-6">
+          <div className="rounded-lg bg-white px-3 py-2.5">
+            <Image src="/logo-orivex-wordmark.png" alt="Orivex" width={200} height={69} className="h-auto w-full" />
           </div>
-          <div>
-            <p className="text-sm font-semibold leading-none">Orivex</p>
-            <p className="mt-1 text-[11px] text-white/60">Gestion scolaire</p>
-          </div>
+          <p className="mt-2 text-[11px] text-white/60">Gestion scolaire</p>
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3">
