@@ -13,11 +13,37 @@ const initialForm = {
   city: "",
 };
 
+/** Transforme un texte libre en identifiant valide : minuscules, tirets, sans accents */
+function slugify(text) {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // retire les accents (é -> e, etc.)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // tout caractère non autorisé devient un tiret
+    .replace(/^-+|-+$/g, ""); // retire les tirets en trop au début/à la fin
+}
+
 export default function RegisterPage() {
   const [form, setForm] = useState(initialForm);
+  const [slugTouched, setSlugTouched] = useState(false); // true dès que l'utilisateur modifie le slug lui-même
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
+
+  function handleNameChange(e) {
+    const name = e.target.value;
+    setForm((f) => ({
+      ...f,
+      schoolName: name,
+      // Tant que l'utilisateur n'a pas touché au slug lui-même, on le génère automatiquement
+      schoolSlug: slugTouched ? f.schoolSlug : slugify(name),
+    }));
+  }
+
+  function handleSlugChange(e) {
+    setSlugTouched(true);
+    setForm((f) => ({ ...f, schoolSlug: slugify(e.target.value) }));
+  }
 
   function set(key) {
     return (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -32,7 +58,14 @@ export default function RegisterPage() {
       authApi.saveSession(data);
       router.push("/admin");
     } catch (err) {
-      setError(err.message || "Impossible de créer l'école");
+      // Affiche le détail précis du champ en erreur plutôt qu'un message générique
+      const fieldErrors = err.details?.fieldErrors;
+      if (fieldErrors) {
+        const firstError = Object.values(fieldErrors).flat()[0];
+        setError(firstError || err.message);
+      } else {
+        setError(err.message || "Impossible de créer l'école");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -44,13 +77,13 @@ export default function RegisterPage() {
       <p className="mt-1 text-sm text-muted">Un espace Vorelix dédié, en quelques secondes.</p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        <Field label="Nom de l'école" value={form.schoolName} onChange={set("schoolName")} placeholder="Sainte Marie" />
+        <Field label="Nom de l'école" value={form.schoolName} onChange={handleNameChange} placeholder="Sainte Marie" />
         <Field
           label="Identifiant (slug)"
           value={form.schoolSlug}
-          onChange={set("schoolSlug")}
+          onChange={handleSlugChange}
           placeholder="sainte-marie"
-          hint="Utilisé pour la connexion — minuscules, chiffres, tirets uniquement"
+          hint="Généré automatiquement à partir du nom — utilisé pour la connexion"
         />
         <Field label="Email admin (directrice)" type="email" value={form.adminEmail} onChange={set("adminEmail")} />
         <Field

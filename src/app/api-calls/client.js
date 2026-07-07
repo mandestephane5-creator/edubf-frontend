@@ -78,6 +78,7 @@ export async function apiFetch(path, options = {}, { retry = true } = {}) {
     const error = new Error(json.message || `Erreur API (${res.status})`);
     error.code = json.code;
     error.status = res.status;
+    error.details = json.details;
     throw error;
   }
   return json.data;
