@@ -13,7 +13,7 @@ import LoadingScreen from "./LoadingScreen";
 
 // Les 4 pages les plus utilisées, accessibles directement depuis la barre du bas sur mobile.
 // Tout le reste est regroupé dans le tiroir "Plus".
-const PRIMARY_MOBILE_HREFS = ["/admin", "/admin/students", "/admin/grades", "/admin/incidents"];
+const PRIMARY_MOBILE_HREFS = ["/admin", "/admin/people", "/admin/grades", "/admin/incidents"];
 
 export default function DashboardShell({ navItems, children }) {
   const { user, loading, logout } = useAuth();
@@ -93,14 +93,11 @@ export default function DashboardShell({ navItems, children }) {
 
   return (
     <div className="flex min-h-screen bg-bg">
-      {/* ----- Barre latérale (desktop uniquement) ----- */}
-      <aside className="hidden w-60 shrink-0 flex-col bg-primary text-white md:flex">
-        <div className="flex flex-col items-center gap-2 px-5 py-6">
-          <Image src="/logo-vorelix-wordmark.png" alt="Vorelix" width={120} height={120} className="h-24 w-24 rounded-xl" />
-          <p className="text-[11px] text-white/60">Gestion scolaire</p>
-        </div>
+      {/* ----- Barre latérale compacte, icônes seules (desktop uniquement) ----- */}
+      <aside className="hidden w-16 shrink-0 flex-col items-center bg-primary py-4 text-white md:flex">
+        <Image src="/logo-vorelix-wordmark.png" alt="Vorelix" width={36} height={36} className="mb-4 h-9 w-9 rounded-lg" />
 
-        <nav className="flex-1 space-y-0.5 overflow-y-auto px-3">
+        <nav className="flex flex-1 flex-col items-center gap-1 overflow-y-auto">
           {navItems.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
@@ -108,30 +105,28 @@ export default function DashboardShell({ navItems, children }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`focus-ring flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
+                title={item.label}
+                aria-label={item.label}
+                className={`focus-ring flex h-10 w-10 items-center justify-center rounded-lg transition ${
                   active ? "bg-white text-primary" : "text-white/80 hover:bg-white/10"
                 }`}
               >
-                <Icon size={17} strokeWidth={2} />
-                {item.label}
+                <Icon size={19} strokeWidth={2} />
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-white/15 p-3">
-          <div className="flex items-center gap-3 rounded-lg px-2 py-2">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-semibold">
-              {user.email?.[0]?.toUpperCase()}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{roleLabel}</p>
-              <p className="truncate text-xs text-white/60">{user.email}</p>
-            </div>
-            <button onClick={logout} aria-label="Déconnexion" className="focus-ring rounded-md p-1.5 text-white/70 hover:bg-white/10">
-              <LogOut size={16} />
-            </button>
+        <div className="flex flex-col items-center gap-3 border-t border-white/15 pt-3">
+          <div
+            title={`${roleLabel} — ${user.email}`}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-semibold"
+          >
+            {user.email?.[0]?.toUpperCase()}
           </div>
+          <button onClick={logout} title="Déconnexion" aria-label="Déconnexion" className="focus-ring rounded-md p-1.5 text-white/70 hover:bg-white/10">
+            <LogOut size={17} />
+          </button>
         </div>
       </aside>
 

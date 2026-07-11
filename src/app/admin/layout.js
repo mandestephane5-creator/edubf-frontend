@@ -1,12 +1,11 @@
 "use client";
 
-import { LayoutDashboard, Users, UserRound, School, BookOpen, ClipboardList, AlertTriangle, Calendar, CalendarClock, Bell, Settings, Megaphone, Flag, GraduationCap, CheckCheck, CalendarDays, CalendarPlus } from "lucide-react";
+import { LayoutDashboard, Users, School, BookOpen, ClipboardList, AlertTriangle, CalendarPlus, Bell, Settings, GraduationCap, CheckCheck, CalendarDays } from "lucide-react";
 import DashboardShell from "@/components/DashboardShell";
 
 const navItems = [
   { href: "/admin", label: "Vue d'ensemble", icon: LayoutDashboard },
-  { href: "/admin/students", label: "Élèves", icon: Users },
-  { href: "/admin/parents", label: "Parents", icon: UserRound },
+  { href: "/admin/people", label: "Personnes (Élèves & Parents)", icon: Users },
   { href: "/admin/classes", label: "Classes", icon: School },
   { href: "/admin/subjects", label: "Matières", icon: BookOpen },
   { href: "/admin/teachers", label: "Professeurs", icon: GraduationCap },
@@ -14,13 +13,10 @@ const navItems = [
   { href: "/admin/grades", label: "Notes", icon: ClipboardList },
   { href: "/admin/incidents", label: "Incidents", icon: AlertTriangle },
   { href: "/admin/attendance", label: "Présences", icon: CalendarDays },
-  { href: "/admin/timetable", label: "Emploi du temps", icon: Calendar },
-  { href: "/admin/evaluations", label: "Évaluations", icon: CalendarClock },
-  { href: "/admin/calendar", label: "Calendrier", icon: CalendarPlus },
+  { href: "/admin/planning", label: "Planning (Emploi du temps & Évaluations)", icon: Bell },
   { href: "/admin/risk", label: "Élèves à risque", icon: AlertTriangle },
-  { href: "/admin/announcements", label: "Annonces", icon: Megaphone },
-  { href: "/admin/reports", label: "Signalements", icon: Flag },
-  { href: "/admin/notifications", label: "Notifications", icon: Bell },
+  { href: "/admin/communication", label: "Communication (Annonces, Signalements, Notifs)", icon: Bell },
+  { href: "/admin/calendar", label: "Calendrier", icon: CalendarPlus },
   { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ];
 
