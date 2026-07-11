@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Users, School, BookOpen, ClipboardList, AlertTriangle, CalendarPlus, Bell, Settings, GraduationCap, CheckCheck, CalendarDays } from "lucide-react";
+import { LayoutDashboard, Users, School, BookOpen, ClipboardList, AlertTriangle, CalendarPlus, Bell, Settings, GraduationCap, CheckCheck } from "lucide-react";
 import DashboardShell from "@/components/DashboardShell";
 
 const navItems = [
@@ -11,8 +11,7 @@ const navItems = [
   { href: "/admin/teachers", label: "Professeurs", icon: GraduationCap },
   { href: "/admin/validation", label: "Validation", icon: CheckCheck },
   { href: "/admin/grades", label: "Notes", icon: ClipboardList },
-  { href: "/admin/incidents", label: "Incidents", icon: AlertTriangle },
-  { href: "/admin/attendance", label: "Présences", icon: CalendarDays },
+  { href: "/admin/incidents", label: "Incidents (absences, retards, expulsions)", icon: AlertTriangle },
   { href: "/admin/planning", label: "Planning (Emploi du temps & Évaluations)", icon: Bell },
   { href: "/admin/risk", label: "Élèves à risque", icon: AlertTriangle },
   { href: "/admin/communication", label: "Communication (Annonces, Signalements, Notifs)", icon: Bell },

@@ -58,10 +58,11 @@ export default function TeacherIncidentsPage() {
         studentId: selectedStudent.id,
         type,
         date: new Date(date).toISOString(),
+        motif,
         // La matière est automatiquement celle de l'onglet actif : un professeur
         // signale forcément une expulsion dans sa propre matière, pas besoin de la
         // lui faire choisir à nouveau.
-        ...(type === "EXPULSION" && { time, subjectId: active.subjectId, motif }),
+        ...(type === "EXPULSION" && { time, subjectId: active.subjectId }),
       });
       setMessage("Incident signalé (en attente de validation).");
       setSelectedStudent(null);
@@ -180,16 +181,18 @@ export default function TeacherIncidentsPage() {
               onChange={(e) => setTime(e.target.value)}
               className="focus-ring w-full rounded-md border border-border bg-bg px-2 py-2 text-sm outline-none"
             />
-            <input
-              required
-              value={motif}
-              onChange={(e) => setMotif(e.target.value)}
-              placeholder="Motif : bavardage, indiscipline…"
-              className="focus-ring w-full rounded-md border border-border bg-bg px-2 py-2 text-sm outline-none"
-            />
             <p className="text-xs text-muted">Matière : {active?.subjectName} (celle de l'onglet actif)</p>
           </div>
         )}
+
+        <input
+          value={motif}
+          onChange={(e) => setMotif(e.target.value)}
+          placeholder={
+            type === "EXPULSION" ? "Motif : bavardage, indiscipline…" : type === "RETARD" ? "Motif : transport, réveil…" : "Motif : maladie, raison familiale… (optionnel)"
+          }
+          className="focus-ring mb-2.5 w-full rounded-md border border-border bg-bg px-2 py-2 text-sm outline-none"
+        />
 
         <Button className="w-full" onClick={handleReport} disabled={!selectedStudent || submitting}>
           {submitting ? "Envoi…" : "Signaler"}

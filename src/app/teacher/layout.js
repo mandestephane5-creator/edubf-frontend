@@ -1,14 +1,13 @@
 "use client";
 
-import { LayoutDashboard, ClipboardList, AlertTriangle, Flag, CalendarDays, Calendar, User } from "lucide-react";
+import { LayoutDashboard, ClipboardList, AlertTriangle, Flag, Calendar, User } from "lucide-react";
 import DashboardShell from "@/components/DashboardShell";
 
 const navItems = [
   { href: "/teacher", label: "Mes classes", icon: LayoutDashboard },
   { href: "/teacher/grades", label: "Notes", icon: ClipboardList },
-  { href: "/teacher/incidents", label: "Incidents", icon: AlertTriangle },
+  { href: "/teacher/incidents", label: "Incidents (absences, retards, expulsions)", icon: AlertTriangle },
   { href: "/teacher/disruptive", label: "Élèves perturbateurs", icon: Flag },
-  { href: "/teacher/attendance", label: "Présences", icon: CalendarDays },
   { href: "/teacher/timetable", label: "Mon emploi du temps", icon: Calendar },
   { href: "/teacher/profile", label: "Profil", icon: User },
 ];

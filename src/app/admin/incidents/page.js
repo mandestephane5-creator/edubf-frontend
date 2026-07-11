@@ -28,8 +28,22 @@ export default function IncidentsPage() {
   const [month, setMonth] = useState(currentMonth());
   const [incidents, setIncidents] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [exportStart, setExportStart] = useState("");
+  const [exportEnd, setExportEnd] = useState("");
+  const [exporting, setExporting] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
+
+  async function handleExport() {
+    setExporting(true);
+    try {
+      await incidentsApi.exportClassCsv(classId, exportStart, exportEnd);
+      setExportModalOpen(false);
+    } finally {
+      setExporting(false);
+    }
+  }
 
   useEffect(() => {
     async function init() {
@@ -67,7 +81,8 @@ export default function IncidentsPage() {
         studentId: form.studentId,
         type: form.type,
         date: form.date,
-        ...(form.type === "EXPULSION" && { time: form.time, subjectId: form.subjectId, motif: form.motif }),
+        motif: form.motif,
+        ...(form.type === "EXPULSION" && { time: form.time, subjectId: form.subjectId }),
       });
       setForm(emptyForm);
       setModalOpen(false);
@@ -82,7 +97,14 @@ export default function IncidentsPage() {
       <PageHeader
         title="Incidents"
         description="Journal mensuel — absences, retards, expulsions"
-        action={<Button onClick={() => setModalOpen(true)} disabled={!classId}>+ Ajouter un événement</Button>}
+        action={
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setExportModalOpen(true)} disabled={!classId}>
+              Exporter (trimestre)
+            </Button>
+            <Button onClick={() => setModalOpen(true)} disabled={!classId}>+ Ajouter un événement</Button>
+          </div>
+        }
       />
 
       <div className="mb-6 flex flex-wrap gap-3">
@@ -153,22 +175,53 @@ export default function IncidentsPage() {
               <Select label="Matière" value={form.subjectId} onChange={(v) => setForm((f) => ({ ...f, subjectId: v }))} placeholder="Choisir une matière">
                 {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </Select>
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-medium text-ink">Motif</span>
-                <input
-                  required
-                  value={form.motif}
-                  onChange={(e) => setForm((f) => ({ ...f, motif: e.target.value }))}
-                  placeholder="Bavardage, indiscipline…"
-                  className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
-                />
-              </label>
             </>
           )}
+
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-ink">Motif</span>
+            <input
+              value={form.motif}
+              onChange={(e) => setForm((f) => ({ ...f, motif: e.target.value }))}
+              placeholder={
+                form.type === "EXPULSION" ? "Bavardage, indiscipline…" : form.type === "RETARD" ? "Transport, réveil…" : "Maladie, raison familiale…"
+              }
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
+            />
+          </label>
 
           {error && <p className="rounded-md bg-rose-soft px-3 py-2 text-sm text-rose">{error}</p>}
           <Button type="submit" className="w-full">Enregistrer</Button>
         </form>
+      </Modal>
+
+      <Modal open={exportModalOpen} onClose={() => setExportModalOpen(false)} title="Exporter les incidents (CSV)">
+        <div className="space-y-3">
+          <p className="text-sm text-muted">
+            Choisis la plage de dates correspondant au trimestre — utile pour les retraits de points de fin de trimestre.
+          </p>
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-ink">Du</span>
+            <input
+              type="date"
+              value={exportStart}
+              onChange={(e) => setExportStart(e.target.value)}
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-ink">Au</span>
+            <input
+              type="date"
+              value={exportEnd}
+              onChange={(e) => setExportEnd(e.target.value)}
+              className="focus-ring w-full rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
+            />
+          </label>
+          <Button className="w-full" onClick={handleExport} disabled={!exportStart || !exportEnd || exporting}>
+            {exporting ? "Export…" : "Télécharger le CSV"}
+          </Button>
+        </div>
       </Modal>
     </div>
   );

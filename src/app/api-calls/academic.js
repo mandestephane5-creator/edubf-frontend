@@ -1,4 +1,6 @@
-import { api } from "./client";
+import { api, downloadFile } from "./client";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
 export const gradesApi = {
   list: (params = {}) => {
@@ -22,6 +24,8 @@ export const incidentsApi = {
   },
   create: (payload) => api.post("/incidents", payload),
   update: (id, payload) => api.put(`/incidents/${id}`, payload),
+  exportClassCsv: (classId, startDate, endDate) =>
+    downloadFile(`${API_URL}/incidents/export/class/${classId}?startDate=${startDate}&endDate=${endDate}`, `incidents-${classId}.csv`),
   remove: (id) => api.del(`/incidents/${id}`),
 };
 
