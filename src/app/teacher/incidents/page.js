@@ -20,6 +20,8 @@ export default function TeacherIncidentsPage() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [type, setType] = useState("ABSENCE");
   const [date, setDate] = useState(todayIso());
+  const [time, setTime] = useState("");
+  const [motif, setMotif] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -52,10 +54,20 @@ export default function TeacherIncidentsPage() {
     setSubmitting(true);
     setMessage("");
     try {
-      await incidentsApi.create({ studentId: selectedStudent.id, type, date: new Date(date).toISOString() });
+      await incidentsApi.create({
+        studentId: selectedStudent.id,
+        type,
+        date: new Date(date).toISOString(),
+        // La matière est automatiquement celle de l'onglet actif : un professeur
+        // signale forcément une expulsion dans sa propre matière, pas besoin de la
+        // lui faire choisir à nouveau.
+        ...(type === "EXPULSION" && { time, subjectId: active.subjectId, motif }),
+      });
       setMessage("Incident signalé (en attente de validation).");
       setSelectedStudent(null);
       setQuery("");
+      setTime("");
+      setMotif("");
       const updated = await incidentsApi.list({ classId: active.classId });
       setRecent(updated.slice(0, 8));
     } catch (err) {
@@ -159,6 +171,26 @@ export default function TeacherIncidentsPage() {
           />
         </div>
 
+        {type === "EXPULSION" && (
+          <div className="mb-2.5 space-y-2.5">
+            <input
+              type="time"
+              required
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="focus-ring w-full rounded-md border border-border bg-bg px-2 py-2 text-sm outline-none"
+            />
+            <input
+              required
+              value={motif}
+              onChange={(e) => setMotif(e.target.value)}
+              placeholder="Motif : bavardage, indiscipline…"
+              className="focus-ring w-full rounded-md border border-border bg-bg px-2 py-2 text-sm outline-none"
+            />
+            <p className="text-xs text-muted">Matière : {active?.subjectName} (celle de l'onglet actif)</p>
+          </div>
+        )}
+
         <Button className="w-full" onClick={handleReport} disabled={!selectedStudent || submitting}>
           {submitting ? "Envoi…" : "Signaler"}
         </Button>
@@ -171,14 +203,17 @@ export default function TeacherIncidentsPage() {
       ) : (
         <div className="space-y-1.5">
           {recent.map((inc) => (
-            <div key={inc.id} className="flex items-center justify-between rounded-md border border-border bg-surface px-3 py-2">
-              <span className="text-sm text-ink">
-                {inc.student.firstName} {inc.student.lastName}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted">{new Date(inc.date).toLocaleDateString("fr-FR")}</span>
-                <Badge value={inc.type} />
+            <div key={inc.id} className="rounded-md border border-border bg-surface px-3 py-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-ink">
+                  {inc.student.firstName} {inc.student.lastName}
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted">{new Date(inc.date).toLocaleDateString("fr-FR")}</span>
+                  <Badge value={inc.type} />
+                </div>
               </div>
+              {inc.motif && <p className="mt-1 text-xs text-muted">Motif : {inc.motif}</p>}
             </div>
           ))}
         </div>

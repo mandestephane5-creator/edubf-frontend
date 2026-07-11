@@ -42,6 +42,8 @@ export default function AttendancePage() {
   function markAllPresent() {
     setRows((prev) => prev.map((r) => ({ ...r, present: true })));
   }
+  // Note : "present: true" est déjà la valeur par défaut de chaque ligne désormais —
+  // ce bouton sert seulement à annuler des absences déjà cochées par erreur.
 
   async function handleSave() {
     setSaving(true);
