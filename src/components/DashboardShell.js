@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { notificationsApi } from "@/app/api-calls/misc";
 import { searchApi } from "@/app/api-calls/misc";
+import InstallPwaButton from "./InstallPwaButton";
 import LoadingScreen from "./LoadingScreen";
 
 // Les 4 pages les plus utilisées, accessibles directement depuis la barre du bas sur mobile.
@@ -171,6 +172,7 @@ export default function DashboardShell({ navItems, children }) {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
+            <InstallPwaButton />
             <button
               onClick={toggleDarkMode}
               aria-label="Basculer le mode sombre"
