@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Users, UserRound, School, BookOpen, ClipboardList, AlertTriangle, Calendar, CalendarClock, Bell, Settings, Megaphone, Flag } from "lucide-react";
+import { LayoutDashboard, Users, UserRound, School, BookOpen, ClipboardList, AlertTriangle, Calendar, CalendarClock, Bell, Settings, Megaphone, Flag, GraduationCap, CheckCheck, CalendarDays, CalendarPlus } from "lucide-react";
 import DashboardShell from "@/components/DashboardShell";
 
 const navItems = [
@@ -9,10 +9,14 @@ const navItems = [
   { href: "/admin/parents", label: "Parents", icon: UserRound },
   { href: "/admin/classes", label: "Classes", icon: School },
   { href: "/admin/subjects", label: "Matières", icon: BookOpen },
+  { href: "/admin/teachers", label: "Professeurs", icon: GraduationCap },
+  { href: "/admin/validation", label: "Validation", icon: CheckCheck },
   { href: "/admin/grades", label: "Notes", icon: ClipboardList },
   { href: "/admin/incidents", label: "Incidents", icon: AlertTriangle },
+  { href: "/admin/attendance", label: "Présences", icon: CalendarDays },
   { href: "/admin/timetable", label: "Emploi du temps", icon: Calendar },
   { href: "/admin/evaluations", label: "Évaluations", icon: CalendarClock },
+  { href: "/admin/calendar", label: "Calendrier", icon: CalendarPlus },
   { href: "/admin/risk", label: "Élèves à risque", icon: AlertTriangle },
   { href: "/admin/announcements", label: "Annonces", icon: Megaphone },
   { href: "/admin/reports", label: "Signalements", icon: Flag },

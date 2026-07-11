@@ -144,7 +144,7 @@ export default function DashboardShell({ navItems, children }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setSearchOpen(true)}
-                placeholder="Rechercher un élève (nom, matricule)…"
+                placeholder="Rechercher un élève (nom, numéro de compte)…"
                 className="w-full bg-transparent text-ink outline-none placeholder:text-muted"
               />
             </div>

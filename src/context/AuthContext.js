@@ -32,8 +32,9 @@ export function AuthProvider({ children }) {
   async function login(schoolSlug, identifier, password) {
     const data = await authApi.login(schoolSlug, identifier, password);
     authApi.saveSession(data);
-    await loadUser();
-    router.push("/admin");
+    const me = await authApi.me();
+    setUser(me);
+    router.push(me.role === "TEACHER" ? "/teacher" : "/admin");
   }
 
   async function logout() {

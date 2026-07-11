@@ -189,7 +189,7 @@ export default function StudentsPage() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Rechercher un élève ou un matricule…"
+          placeholder="Rechercher un élève ou un numéro de compte…"
           className="focus-ring w-full max-w-sm rounded-md border border-border bg-surface px-3 py-2 text-sm outline-none"
         />
         <Button variant="outline" type="submit">Rechercher</Button>
@@ -198,7 +198,7 @@ export default function StudentsPage() {
       {successInfo && (
         <div className="mb-4 rounded-lg bg-emerald-soft px-4 py-3 text-sm text-emerald">
           <p className="font-medium">Élève inscrit avec succès.</p>
-          <p>Matricule : <span className="font-mono">{successInfo.matricule}</span></p>
+          <p>Numéro de compte : <span className="font-mono">{successInfo.matricule}</span></p>
           {successInfo.parentPassword && (
             <p>Mot de passe du parent : <span className="font-mono">{successInfo.parentPassword}</span> — transmettez-le au parent.</p>
           )}
@@ -219,7 +219,7 @@ export default function StudentsPage() {
         <DataTable
           columns={[
             { key: "avatar", header: "", render: (r) => <Avatar name={`${r.firstName} ${r.lastName}`} /> },
-            { key: "matricule", header: "Matricule", render: (r) => <span className="font-mono text-xs">{r.matricule}</span> },
+            { key: "matricule", header: "Numéro de compte", render: (r) => <span className="font-mono text-xs">{r.matricule}</span> },
             { key: "name", header: "Nom", render: (r) => `${r.firstName} ${r.lastName}` },
             { key: "class", header: "Classe", render: (r) => r.class?.name || "—" },
             {
@@ -313,7 +313,7 @@ export default function StudentsPage() {
                   {r.success ? (
                     <>
                       <p>
-                        Matricule : <span className="font-mono">{r.matricule}</span>
+                        Numéro de compte : <span className="font-mono">{r.matricule}</span>
                         {r.parentPassword && <> — Mot de passe parent : <span className="font-mono">{r.parentPassword}</span></>}
                       </p>
                       <ShareCredentials

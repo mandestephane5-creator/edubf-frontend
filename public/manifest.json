@@ -1,0 +1,24 @@
+{
+  "name": "Vorelix — Gestion scolaire",
+  "short_name": "Vorelix",
+  "description": "Plateforme de gestion scolaire Vorelix",
+  "start_url": "/admin",
+  "display": "standalone",
+  "background_color": "#0F1733",
+  "theme_color": "#1E3AE8",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

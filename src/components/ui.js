@@ -95,6 +95,7 @@ const BADGE_TONES = {
   RETARD: "bg-amber-soft text-amber",
   EXPULSION: "bg-rose-soft text-rose",
   Actif: "bg-emerald-soft text-emerald",
+  "Désactivé": "bg-rose-soft text-rose",
 };
 
 export function Badge({ value }) {

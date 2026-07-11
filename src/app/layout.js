@@ -12,6 +12,16 @@ const inter = Inter({
 export const metadata = {
   title: "Vorelix — Gestion scolaire",
   description: "Vorelix, la plateforme de gestion scolaire complète",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Vorelix",
+  },
+};
+
+export const viewport = {
+  themeColor: "#1E3AE8",
 };
 
 // Applique la classe .dark AVANT le premier rendu (évite un flash clair→sombre

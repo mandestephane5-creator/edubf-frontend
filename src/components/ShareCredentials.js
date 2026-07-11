@@ -7,7 +7,7 @@ function buildMessage({ schoolName, studentName, matricule, password }) {
   return (
     `Bonjour, voici les identifiants de connexion à l'application ${schoolName} ` +
     `pour ${studentName} :\n\n` +
-    `Matricule : ${matricule}\n` +
+    `Numéro de compte : ${matricule}\n` +
     `Mot de passe : ${password}\n\n` +
     `Téléchargez l'application et connectez-vous avec ces identifiants.`
   );
