@@ -6,9 +6,9 @@ import DashboardShell from "@/components/DashboardShell";
 const navItems = [
   { href: "/teacher", label: "Mes classes", icon: LayoutDashboard },
   { href: "/teacher/grades", label: "Notes", icon: ClipboardList },
-  { href: "/teacher/incidents", label: "Incidents (absences, retards, expulsions)", icon: AlertTriangle },
-  { href: "/teacher/disruptive", label: "Élèves perturbateurs", icon: Flag },
-  { href: "/teacher/timetable", label: "Mon emploi du temps", icon: Calendar },
+  { href: "/teacher/incidents", label: "Incidents (absences, retards, expulsions)", shortLabel: "Incidents", icon: AlertTriangle },
+  { href: "/teacher/disruptive", label: "Élèves perturbateurs", shortLabel: "Perturbateurs", icon: Flag },
+  { href: "/teacher/timetable", label: "Mon emploi du temps", shortLabel: "Emploi du temps", icon: Calendar },
   { href: "/teacher/profile", label: "Profil", icon: User },
 ];
 

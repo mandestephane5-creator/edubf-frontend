@@ -40,11 +40,11 @@ export default function InstallPwaButton() {
   return (
     <button
       onClick={handleInstall}
-      className="focus-ring flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-ink hover:bg-bg"
+      className="focus-ring flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 py-1.5 text-xs font-medium text-ink hover:bg-bg sm:px-3"
       title="Installer Vorelix sur cet appareil"
     >
       <Download size={14} />
-      Installer l'app
+      <span className="hidden sm:inline">Installer l'app</span>
     </button>
   );
 }

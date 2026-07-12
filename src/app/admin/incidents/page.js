@@ -98,7 +98,7 @@ export default function IncidentsPage() {
         title="Incidents"
         description="Journal mensuel — absences, retards, expulsions"
         action={
-          <div className="flex gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
             <Button variant="outline" onClick={() => setExportModalOpen(true)} disabled={!classId}>
               Exporter (trimestre)
             </Button>

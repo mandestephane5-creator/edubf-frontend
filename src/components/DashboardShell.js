@@ -133,7 +133,7 @@ export default function DashboardShell({ navItems, children }) {
 
       <div className="flex min-h-screen flex-1 flex-col">
         <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:px-8">
-          <div ref={searchBoxRef} className="relative md:w-80">
+          <div ref={searchBoxRef} className="relative min-w-0 flex-1 md:flex-none md:w-80">
             <div className="flex items-center gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm">
               <Search size={16} className="shrink-0 text-muted" />
               <input
@@ -171,7 +171,7 @@ export default function DashboardShell({ navItems, children }) {
             )}
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
             <InstallPwaButton />
             <button
               onClick={toggleDarkMode}
@@ -209,7 +209,7 @@ export default function DashboardShell({ navItems, children }) {
               }`}
             >
               <Icon size={20} strokeWidth={2} />
-              <span className="truncate px-1">{item.label}</span>
+              <span className="truncate px-1">{item.shortLabel || item.label}</span>
             </Link>
           );
         })}
@@ -251,7 +251,7 @@ export default function DashboardShell({ navItems, children }) {
                     }`}
                   >
                     <Icon size={20} strokeWidth={2} />
-                    {item.label}
+                    {item.shortLabel || item.label}
                   </Link>
                 );
               })}
