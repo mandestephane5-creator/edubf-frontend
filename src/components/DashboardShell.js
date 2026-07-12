@@ -195,33 +195,35 @@ export default function DashboardShell({ navItems, children }) {
         <main className="flex-1 px-4 py-6 pb-24 md:px-8 md:py-8 md:pb-8">{children}</main>
       </div>
 
-      {/* ----- Barre de navigation du bas (mobile uniquement) ----- */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-stretch border-t border-border bg-surface shadow-[0_-2px_10px_rgba(18,24,74,0.06)] md:hidden">
-        {primaryItems.map((item) => {
-          const active = isActive(item.href);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`focus-ring flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${
-                active ? "text-primary" : "text-muted"
-              }`}
-            >
-              <Icon size={20} strokeWidth={2} />
-              <span className="truncate px-1">{item.shortLabel || item.label}</span>
-            </Link>
-          );
-        })}
-        <button
-          onClick={() => setMoreOpen(true)}
-          className={`focus-ring flex flex-1 flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${
-            moreOpen ? "text-primary" : "text-muted"
-          }`}
-        >
-          <MoreHorizontal size={20} strokeWidth={2} />
-          <span>Plus</span>
-        </button>
+      {/* ----- Barre de navigation du bas (mobile uniquement) — style pilule active ----- */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface px-2 py-2 shadow-[0_-2px_10px_rgba(18,24,74,0.06)] md:hidden">
+        <div className="flex items-stretch gap-1">
+          {primaryItems.map((item) => {
+            const active = isActive(item.href);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`focus-ring flex flex-1 flex-col items-center gap-0.5 rounded-pill py-2 text-[11px] font-medium transition ${
+                  active ? "bg-primary text-white" : "text-muted"
+                }`}
+              >
+                <Icon size={18} strokeWidth={2} />
+                <span className="truncate px-1">{item.shortLabel || item.label}</span>
+              </Link>
+            );
+          })}
+          <button
+            onClick={() => setMoreOpen(true)}
+            className={`focus-ring flex flex-1 flex-col items-center gap-0.5 rounded-pill py-2 text-[11px] font-medium transition ${
+              moreOpen ? "bg-primary text-white" : "text-muted"
+            }`}
+          >
+            <MoreHorizontal size={18} strokeWidth={2} />
+            <span>Plus</span>
+          </button>
+        </div>
       </nav>
 
       {/* ----- Tiroir "Plus" (mobile uniquement) ----- */}

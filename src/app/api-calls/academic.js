@@ -8,6 +8,7 @@ export const gradesApi = {
     return api.get(`/grades${qs ? `?${qs}` : ""}`);
   },
   create: (payload) => api.post("/grades", payload),
+  createBatch: (payload) => api.post("/grades/batch", payload),
   update: (id, payload) => api.put(`/grades/${id}`, payload),
   remove: (id) => api.del(`/grades/${id}`),
   studentAverage: (studentId, term, academicYear) =>
@@ -15,6 +16,11 @@ export const gradesApi = {
   classRanking: (classId, term, academicYear) =>
     api.get(`/grades/class/${classId}/ranking?term=${term}&academicYear=${academicYear}`),
   auditLog: () => api.get("/grades/audit-log"),
+  auditLogForGrade: (id) => api.get(`/grades/${id}/audit-log`),
+  teacherStats: (classId, subjectId, term, academicYear) =>
+    api.get(`/grades/stats/teacher?classId=${classId}&subjectId=${subjectId}&term=${term}&academicYear=${academicYear}`),
+  schoolStats: (term, academicYear) => api.get(`/grades/stats/school?term=${term}&academicYear=${academicYear}`),
+  repeaters: (classId, academicYear) => api.get(`/grades/stats/repeaters/${classId}?academicYear=${academicYear}`),
 };
 
 export const incidentsApi = {
