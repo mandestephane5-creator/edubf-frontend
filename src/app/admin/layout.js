@@ -20,6 +20,12 @@ const navItems = [
   { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ];
 
+const primaryHrefs = ["/admin", "/admin/people", "/admin/grades", "/admin/incidents"];
+
 export default function AdminLayout({ children }) {
-  return <DashboardShell navItems={navItems}>{children}</DashboardShell>;
+  return (
+    <DashboardShell navItems={navItems} primaryHrefs={primaryHrefs}>
+      {children}
+    </DashboardShell>
+  );
 }

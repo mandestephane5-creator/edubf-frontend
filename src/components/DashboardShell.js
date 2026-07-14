@@ -12,11 +12,7 @@ import { searchApi } from "@/app/api-calls/misc";
 import InstallPwaButton from "./InstallPwaButton";
 import LoadingScreen from "./LoadingScreen";
 
-// Les 4 pages les plus utilisées, accessibles directement depuis la barre du bas sur mobile.
-// Tout le reste est regroupé dans le tiroir "Plus".
-const PRIMARY_MOBILE_HREFS = ["/admin", "/admin/people", "/admin/grades", "/admin/incidents"];
-
-export default function DashboardShell({ navItems, children }) {
+export default function DashboardShell({ navItems, primaryHrefs, children }) {
   const { user, loading, logout } = useAuth();
   const { isDark, toggleDarkMode } = useTheme();
   const router = useRouter();
@@ -85,8 +81,12 @@ export default function DashboardShell({ navItems, children }) {
   }
 
   const roleLabel = user.role === "ADMIN" ? "Directrice" : "Surveillant";
-  const primaryItems = PRIMARY_MOBILE_HREFS.map((href) => navItems.find((i) => i.href === href)).filter(Boolean);
-  const moreItems = navItems.filter((i) => !PRIMARY_MOBILE_HREFS.includes(i.href));
+  // Les 4 pages les plus utilisées, accessibles directement depuis la barre du bas sur
+  // mobile — passées en prop par chaque layout (admin/professeur), avec un repli sur
+  // les 4 premiers éléments du menu si non précisé.
+  const effectivePrimaryHrefs = primaryHrefs || navItems.slice(0, 4).map((i) => i.href);
+  const primaryItems = effectivePrimaryHrefs.map((href) => navItems.find((i) => i.href === href)).filter(Boolean);
+  const moreItems = navItems.filter((i) => !effectivePrimaryHrefs.includes(i.href));
 
   function isActive(href) {
     return pathname === href || pathname.startsWith(href + "/");

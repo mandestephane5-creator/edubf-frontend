@@ -13,6 +13,12 @@ const navItems = [
   { href: "/teacher/profile", label: "Profil", icon: User },
 ];
 
+const primaryHrefs = ["/teacher", "/teacher/grades", "/teacher/incidents", "/teacher/statistics"];
+
 export default function TeacherLayout({ children }) {
-  return <DashboardShell navItems={navItems}>{children}</DashboardShell>;
+  return (
+    <DashboardShell navItems={navItems} primaryHrefs={primaryHrefs}>
+      {children}
+    </DashboardShell>
+  );
 }
